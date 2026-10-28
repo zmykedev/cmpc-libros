@@ -1,0 +1,87 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  name         String
+  createdAt    DateTime   @default(now()) @map("created_at")
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+model Author {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  books Book[]
+
+  @@map("authors")
+}
+
+model Publisher {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  books Book[]
+
+  @@map("publishers")
+}
+
+model Genre {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  books Book[]
+
+  @@map("genres")
+}
+
+model Book {
+  id          Int       @id @default(autoincrement())
+  title       String
+  price       Decimal   @db.Decimal(10, 2)
+  available   Boolean   @default(true)
+  imageUrl    String?   @map("image_url")
+  authorId    Int       @map("author_id")
+  publisherId Int       @map("publisher_id")
+  genreId     Int       @map("genre_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  author    Author    @relation(fields: [authorId], references: [id])
+  publisher Publisher @relation(fields: [publisherId], references: [id])
+  genre     Genre     @relation(fields: [genreId], references: [id])
+
+  // Índices para las consultas frecuentes del listado (filtros + orden + soft delete)
+  @@index([deletedAt, title])
+  @@index([authorId])
+  @@index([publisherId])
+  @@index([genreId])
+  @@index([available])
+  @@index([price])
+  @@map("books")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String // CREATE | UPDATE | DELETE | UPLOAD_IMAGE
+  entity    String
+  entityId  Int      @map("entity_id")
+  changes   Json?
+  userId    Int?     @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

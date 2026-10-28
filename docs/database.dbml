@@ -1,0 +1,62 @@
+// Pegar en https://dbdiagram.io para ver el modelo relacional
+
+Table users {
+  id int [pk, increment]
+  email varchar [unique, not null]
+  password_hash varchar [not null]
+  name varchar [not null]
+  created_at timestamp [default: `now()`]
+}
+
+Table authors {
+  id int [pk, increment]
+  name varchar [unique, not null]
+}
+
+Table publishers {
+  id int [pk, increment]
+  name varchar [unique, not null]
+}
+
+Table genres {
+  id int [pk, increment]
+  name varchar [unique, not null]
+}
+
+Table books {
+  id int [pk, increment]
+  title varchar [not null]
+  price decimal(10,2) [not null]
+  available boolean [not null, default: true]
+  image_url varchar
+  author_id int [not null, ref: > authors.id]
+  publisher_id int [not null, ref: > publishers.id]
+  genre_id int [not null, ref: > genres.id]
+  created_at timestamp [default: `now()`]
+  updated_at timestamp
+  deleted_at timestamp [note: 'soft delete']
+
+  indexes {
+    (deleted_at, title)
+    author_id
+    publisher_id
+    genre_id
+    available
+    price
+  }
+}
+
+Table audit_logs {
+  id int [pk, increment]
+  action varchar [not null, note: 'CREATE | UPDATE | DELETE | UPLOAD_IMAGE']
+  entity varchar [not null]
+  entity_id int [not null]
+  changes jsonb
+  user_id int [ref: > users.id]
+  created_at timestamp [default: `now()`]
+
+  indexes {
+    (entity, entity_id)
+    created_at
+  }
+}
