@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { booksApi } from '../api/books';
 import { book } from '../test/fixtures';
-import { BookDetailPage } from './BookDetailPage';
+import { BookDetailPage, catalogName } from './BookDetailPage';
 
 vi.mock('../api/books', () => ({ booksApi: { get: vi.fn(), remove: vi.fn() } }));
 const api = vi.mocked(booksApi);
@@ -52,6 +52,12 @@ describe('BookDetailPage', () => {
     confirm.mockReturnValue(true);
     await userEvent.click(screen.getByText('Eliminar'));
     expect(await screen.findByRole('alert')).toHaveTextContent('no se pudo');
+  });
+
+  it('catalogName invierte nombre y apellidos', () => {
+    expect(catalogName('Julio Cortázar')).toBe('Cortázar, Julio');
+    expect(catalogName('Gabriel García Márquez')).toBe('García Márquez, Gabriel');
+    expect(catalogName('Platón')).toBe('Platón');
   });
 
   it('muestra error si no existe', async () => {

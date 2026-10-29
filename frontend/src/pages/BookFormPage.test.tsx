@@ -45,7 +45,7 @@ describe('BookFormPage', () => {
     await userEvent.type(title, 'a');
     await userEvent.clear(title);
     expect(await screen.findByText('El título es obligatorio')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Guardar' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Crear libro' })).toBeDisabled();
     await userEvent.type(screen.getByLabelText('Precio (CLP)'), '-');
     await userEvent.clear(screen.getByLabelText('Precio (CLP)'));
     expect(await screen.findByText('Ingresa un precio válido')).toBeInTheDocument();
@@ -56,9 +56,9 @@ describe('BookFormPage', () => {
     renderAt('/books/new');
     await fill();
     const file = new File(['img'], 'tapa.png', { type: 'image/png' });
-    await userEvent.upload(screen.getByLabelText(/Imagen/), file);
+    await userEvent.upload(screen.getByLabelText(/Portada/), file);
     expect(screen.getByAltText('Vista previa')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Guardar' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Crear libro' }));
     await waitFor(() => expect(api.create).toHaveBeenCalledWith(
       { title: 'Nuevo', author: 'Autor X', publisher: 'Ed', genre: 'Novela', price: 9990, available: true },
     ));
@@ -72,7 +72,7 @@ describe('BookFormPage', () => {
     expect(screen.getByAltText('Vista previa')).toHaveAttribute('src', '/uploads/a.png');
     await userEvent.clear(screen.getByLabelText('Título'));
     await userEvent.type(screen.getByLabelText('Título'), 'Rayuela 2');
-    await userEvent.click(screen.getByRole('button', { name: 'Guardar' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }));
     await waitFor(() => expect(api.update).toHaveBeenCalledWith(1, expect.objectContaining({ title: 'Rayuela 2' })));
     expect(api.uploadImage).not.toHaveBeenCalled();
   });
@@ -81,7 +81,7 @@ describe('BookFormPage', () => {
     api.create.mockRejectedValue(new Error('ya existe'));
     renderAt('/books/new');
     await fill();
-    await userEvent.click(screen.getByRole('button', { name: 'Guardar' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Crear libro' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('ya existe');
   });
 
@@ -93,7 +93,7 @@ describe('BookFormPage', () => {
 
   it('rechaza imágenes inválidas', async () => {
     renderAt('/books/new');
-    await userEvent.upload(screen.getByLabelText(/Imagen/), new File(['x'], 'a.gif', { type: 'image/gif' }), { applyAccept: false });
+    await userEvent.upload(screen.getByLabelText(/Portada/), new File(['x'], 'a.gif', { type: 'image/gif' }), { applyAccept: false });
     expect(screen.getByText('Formato no permitido (jpg, png, webp)')).toBeInTheDocument();
   });
 

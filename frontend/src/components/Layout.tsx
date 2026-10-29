@@ -6,8 +6,10 @@ export function Layout() {
   return (
     <>
       <header className="topbar">
-        <Link to="/" className="brand">CMPC-libros</Link>
-        <button className="btn ghost" onClick={logout}>Cerrar sesión</button>
+        <div className="topbar-inner">
+          <Link to="/" className="wordmark">CMPC<span>-libros</span></Link>
+          <button className="btn quiet" onClick={logout}>Cerrar sesión</button>
+        </div>
       </header>
       <main className="container">
         <Outlet />

@@ -34,9 +34,12 @@ export function LoginPage() {
 
   return (
     <div className="login">
-      <form className="card" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <h1>CMPC-libros</h1>
-        <p className="muted">Inicia sesión para gestionar el inventario</p>
+      <div className="login-brand">
+        <p className="wordmark big">CMPC<span>-libros</span></p>
+        <p className="login-lede">Inventario de la tienda: busca, registra y actualiza cada libro del catálogo.</p>
+      </div>
+      <form className="login-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <h1>Iniciar sesión</h1>
         <Alert message={error} />
         <Field id="email" label="Correo" error={formState.errors.email?.message}>
           <input id="email" type="email" autoComplete="username" {...register('email')} />
@@ -44,7 +47,7 @@ export function LoginPage() {
         <Field id="password" label="Contraseña" error={formState.errors.password?.message}>
           <input id="password" type="password" autoComplete="current-password" {...register('password')} />
         </Field>
-        <button className="btn primary" type="submit" disabled={formState.isSubmitting}>
+        <button className="btn primary block" type="submit" disabled={formState.isSubmitting}>
           {formState.isSubmitting ? 'Ingresando…' : 'Ingresar'}
         </button>
       </form>

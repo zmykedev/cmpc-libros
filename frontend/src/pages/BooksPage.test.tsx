@@ -25,7 +25,7 @@ describe('BooksPage', () => {
     renderPage();
     expect(await screen.findByText('Rayuela')).toBeInTheDocument();
     expect(screen.getByRole('cell', { name: 'Julio Cortázar' })).toBeInTheDocument();
-    expect(screen.getByText('1 libros')).toBeInTheDocument();
+    expect(screen.getByText('1 libro')).toBeInTheDocument();
   });
 
   it('filtra por género y disponibilidad', async () => {
@@ -69,7 +69,8 @@ describe('BooksPage', () => {
   it('muestra estado vacío y errores', async () => {
     api.list.mockResolvedValueOnce(page([], 0, 0));
     renderPage();
-    expect(await screen.findByText('No se encontraron libros')).toBeInTheDocument();
+    expect(await screen.findByText('Ningún libro coincide con la búsqueda.')).toBeInTheDocument();
+    await userEvent.click(screen.getByText('Quitar filtros'));
     api.list.mockRejectedValue(new Error('falló'));
     await userEvent.click(screen.getByRole('button', { name: 'Título' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('falló');

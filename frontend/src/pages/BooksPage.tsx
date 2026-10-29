@@ -78,13 +78,18 @@ export function BooksPage() {
         <h1>Inventario</h1>
         <div className="actions">
           <button className="btn" onClick={exportCsv}>Exportar CSV</button>
-          <Link className="btn primary" to="/books/new">Nuevo libro</Link>
+          <Link className="btn primary" to="/books/new">Agregar libro</Link>
         </div>
       </div>
       <BookFilters values={filters} catalogs={catalogs} onChange={changeFilters} />
       <Alert message={error} />
       <div className={loading ? 'loading' : undefined} aria-busy={loading}>
-        <BookTable books={data?.items ?? []} sorts={sorts} onSort={(f) => (setSorts(toggleSort(sorts, f)), setPage(1))} />
+        <BookTable
+          books={data?.items ?? []}
+          sorts={sorts}
+          onSort={(f) => (setSorts(toggleSort(sorts, f)), setPage(1))}
+          onClear={() => changeFilters(emptyFilters)}
+        />
       </div>
       {data && <Pagination page={page} totalPages={data.meta.totalPages} total={data.meta.total} onChange={setPage} />}
     </section>

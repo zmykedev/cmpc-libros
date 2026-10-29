@@ -82,39 +82,55 @@ export function BookFormPage() {
   );
 
   return (
-    <section>
+    <section className="form-page">
       <div className="page-head">
-        <h1>{isEdit ? 'Editar libro' : 'Nuevo libro'}</h1>
-        <Link to={isEdit ? `/books/${id}` : '/'} className="btn ghost">Cancelar</Link>
+        <h1>{isEdit ? 'Editar libro' : 'Agregar libro'}</h1>
       </div>
-      <form className="card form" onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form className="book-form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <Alert message={error} />
-        <Field id="title" label="Título" error={errors.title?.message}>
-          <input id="title" aria-invalid={!!errors.title} {...register('title')} />
-        </Field>
-        <Field id="author" label="Autor" error={errors.author?.message}>
-          <input id="author" list="dl-authors" aria-invalid={!!errors.author} {...register('author')} />
-        </Field>
-        <Field id="publisher" label="Editorial" error={errors.publisher?.message}>
-          <input id="publisher" list="dl-publishers" aria-invalid={!!errors.publisher} {...register('publisher')} />
-        </Field>
-        <Field id="genre" label="Género" error={errors.genre?.message}>
-          <input id="genre" list="dl-genres" aria-invalid={!!errors.genre} {...register('genre')} />
-        </Field>
-        <Field id="price" label="Precio (CLP)" error={errors.price?.message}>
-          <input id="price" type="number" step="1" min="0" aria-invalid={!!errors.price} {...register('price', { valueAsNumber: true })} />
-        </Field>
-        <label className="check"><input type="checkbox" {...register('available')} /> Disponible</label>
-        <Field id="image" label={`Imagen (jpg, png o webp, máx. ${MAX_IMAGE_MB} MB)`} error={imageError}>
-          <input id="image" type="file" accept={IMAGE_TYPES.join(',')} onChange={(e) => onImage(e.target.files?.[0])} />
-        </Field>
-        {preview && <img className="preview" src={preview} alt="Vista previa" />}
+        <div className="form-grid">
+          <div className="span-2">
+            <Field id="title" label="Título" error={errors.title?.message}>
+              <input id="title" aria-invalid={!!errors.title} {...register('title')} />
+            </Field>
+          </div>
+          <Field id="author" label="Autor" error={errors.author?.message}>
+            <input id="author" list="dl-authors" placeholder="Nombre y apellido" aria-invalid={!!errors.author} {...register('author')} />
+          </Field>
+          <Field id="publisher" label="Editorial" error={errors.publisher?.message}>
+            <input id="publisher" list="dl-publishers" aria-invalid={!!errors.publisher} {...register('publisher')} />
+          </Field>
+          <Field id="genre" label="Género" error={errors.genre?.message}>
+            <input id="genre" list="dl-genres" aria-invalid={!!errors.genre} {...register('genre')} />
+          </Field>
+          <Field id="price" label="Precio (CLP)" error={errors.price?.message}>
+            <input id="price" type="number" step="1" min="0" inputMode="numeric" aria-invalid={!!errors.price} {...register('price', { valueAsNumber: true })} />
+          </Field>
+          <label className="check span-2">
+            <input type="checkbox" {...register('available')} />
+            <span>Disponible para la venta</span>
+          </label>
+        </div>
+
+        <div className="image-row">
+          <div className="thumb">
+            {preview ? <img src={preview} alt="Vista previa" /> : <span>Sin portada</span>}
+          </div>
+          <Field id="image" label={`Portada (jpg, png o webp, máx. ${MAX_IMAGE_MB} MB)`} error={imageError}>
+            <input id="image" type="file" accept={IMAGE_TYPES.join(',')} onChange={(e) => onImage(e.target.files?.[0])} />
+          </Field>
+        </div>
+
         {datalist('authors')}
         {datalist('publishers')}
         {datalist('genres')}
-        <button className="btn primary" type="submit" disabled={isSubmitting || !isValid}>
-          {isSubmitting ? 'Guardando…' : 'Guardar'}
-        </button>
+
+        <div className="form-actions">
+          <Link to={isEdit ? `/books/${id}` : '/'} className="btn quiet">Cancelar</Link>
+          <button className="btn primary" type="submit" disabled={isSubmitting || !isValid}>
+            {isSubmitting ? 'Guardando…' : isEdit ? 'Guardar cambios' : 'Crear libro'}
+          </button>
+        </div>
       </form>
     </section>
   );
