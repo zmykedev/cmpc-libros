@@ -19,8 +19,12 @@ Aplicación web para digitalizar el inventario de la tienda CMPC-libros.
 Requisitos: Docker y Docker Compose.
 
 ```bash
+git clone https://github.com/zmykedev/cmpc-libros.git
+cd cmpc-libros
 docker compose up -d --build
 ```
+
+La primera vez tarda unos minutos. El orden de arranque está controlado por healthchecks: Postgres → API (migraciones + datos de ejemplo) → frontend. Para ver el avance: `docker compose ps` o `docker compose logs -f backend`.
 
 | Servicio | URL |
 |---|---|
@@ -35,7 +39,17 @@ Usuario:    admin@cmpc.cl
 Contraseña: admin123
 ```
 
-Para producción define un secreto propio: `JWT_SECRET=algo-largo-y-aleatorio docker compose up -d`.
+La pantalla de login muestra estas credenciales y tiene un botón que completa el formulario. La prueba pide login con JWT, no registro de usuarios; un alta de usuarios con roles está entre las mejoras para producción (sección 5).
+
+Comandos útiles:
+
+| Acción | Comando |
+|---|---|
+| Detener | `docker compose down` |
+| Detener y borrar datos (base e imágenes subidas) | `docker compose down -v` |
+| Reconstruir tras cambios de código | `docker compose up -d --build` |
+
+**Configuración opcional:** copia `.env.example` a `.env` para cambiar el secreto JWT, las credenciales de Postgres o los puertos (`API_PORT`, `WEB_PORT`) si el 3000 o el 8080 ya están ocupados en tu máquina.
 
 ### Opción B — Local sin Docker
 

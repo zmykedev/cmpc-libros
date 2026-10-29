@@ -82,6 +82,10 @@ input[type='file']::file-selector-button {
 .login-form { background: var(--sheet); border-left: 1px solid var(--line); padding: 64px clamp(24px, 5vw, 72px); display: flex; flex-direction: column; justify-content: center; gap: 12px; }
 .login-form h1 { font-size: 1.5rem; margin-bottom: 12px; }
 .login-form > * { max-width: 360px; width: 100%; }
+.demo { margin-top: 12px; padding: 12px 14px; border: 1px dashed var(--line); border-radius: 4px; font-size: .875rem; color: var(--ink-soft); }
+.demo p { margin: 0 0 4px; }
+.demo strong { color: var(--ink); font-weight: 600; }
+.demo .btn.quiet { height: auto; padding: 0; color: var(--pine); text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 760px) {
   .login { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
   .login-brand { padding: 48px 16px 24px; justify-content: flex-start; }

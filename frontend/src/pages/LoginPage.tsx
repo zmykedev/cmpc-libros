@@ -14,11 +14,13 @@ const schema = z.object({
 });
 type FormValues = z.infer<typeof schema>;
 
+export const DEMO = { email: 'admin@cmpc.cl', password: 'admin123' };
+
 export function LoginPage() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
-  const { register, handleSubmit, formState } = useForm<FormValues>({ resolver: zodResolver(schema), mode: 'onTouched' });
+  const { register, handleSubmit, formState, setValue } = useForm<FormValues>({ resolver: zodResolver(schema), mode: 'onTouched' });
 
   if (isAuthenticated) return <Navigate to="/" replace />;
 
@@ -50,6 +52,21 @@ export function LoginPage() {
         <button className="btn primary block" type="submit" disabled={formState.isSubmitting}>
           {formState.isSubmitting ? 'Ingresando…' : 'Ingresar'}
         </button>
+        <aside className="demo" aria-label="Usuario de prueba">
+          <p>
+            Usuario de prueba: <strong>{DEMO.email}</strong> / <strong>{DEMO.password}</strong>
+          </p>
+          <button
+            type="button"
+            className="btn quiet"
+            onClick={() => {
+              setValue('email', DEMO.email, { shouldValidate: true });
+              setValue('password', DEMO.password, { shouldValidate: true });
+            }}
+          >
+            Completar con el usuario de prueba
+          </button>
+        </aside>
       </form>
     </div>
   );

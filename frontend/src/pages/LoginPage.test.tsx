@@ -43,6 +43,15 @@ describe('LoginPage', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
+  it('completa el usuario de prueba con un clic', async () => {
+    login.mockResolvedValue(undefined);
+    renderPage();
+    await userEvent.click(screen.getByText('Completar con el usuario de prueba'));
+    expect(screen.getByLabelText('Correo')).toHaveValue('admin@cmpc.cl');
+    await userEvent.click(screen.getByRole('button', { name: 'Ingresar' }));
+    expect(login).toHaveBeenCalledWith('admin@cmpc.cl', 'admin123');
+  });
+
   it('redirige si ya hay sesión', () => {
     isAuthenticated = true;
     renderPage();

@@ -7,7 +7,8 @@ COPY . .
 RUN npx prisma generate \
  && npm run build \
  && npx tsc prisma/seed.ts --outDir dist-seed --esModuleInterop --skipLibCheck \
- && npm prune --omit=dev
+ && npm prune --omit=dev \
+ && npx prisma generate
 
 FROM node:22-alpine
 RUN apk add --no-cache openssl
@@ -21,4 +22,5 @@ COPY package.json ./
 RUN mkdir -p uploads && chown -R node:node /app
 USER node
 EXPOSE 3000
+# Migraciones + datos de ejemplo (idempotente) + API
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist-seed/seed.js && node dist/main.js"]

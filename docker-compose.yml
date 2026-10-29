@@ -1,24 +1,29 @@
+# CMPC-libros — levanta todo con:  docker compose up -d --build
+# App: http://localhost:8080   API: http://localhost:3000/api   Swagger: http://localhost:3000/api/docs
+name: cmpc-libros
+
 services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: libros
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-libros}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d libros"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
+    restart: unless-stopped
 
   backend:
     build: ./backend
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/libros?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-libros}?schema=public
       JWT_SECRET: ${JWT_SECRET:-cambia-este-secreto-en-produccion}
-      JWT_EXPIRES_IN: 8h
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-8h}
       PORT: 3000
     volumes:
       - uploads:/app/uploads
@@ -26,15 +31,23 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "${API_PORT:-3000}:3000"
+    healthcheck:
+      # Al arrancar aplica migraciones y seed: se le da margen antes de marcarlo como caído
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/docs-json > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     restart: unless-stopped
 
   frontend:
     build: ./frontend
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     ports:
-      - "8080:80"
+      - "${WEB_PORT:-8080}:80"
     restart: unless-stopped
 
 volumes:
